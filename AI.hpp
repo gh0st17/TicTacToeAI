@@ -11,6 +11,7 @@ class AI {
 
   private:
     const fState myLetter = fState::O;
+    vector<int> lastStep;
     vector<vector<fState>> fieldMask;
 
     vector<int> analyseField(vector<vector<fState>> field);
@@ -24,6 +25,7 @@ class AI {
   public:
 
     AI();
+    ~AI();
     vector<int> makeStep(vector<vector<fState>> field);
 
 };

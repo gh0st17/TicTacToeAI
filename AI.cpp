@@ -1,6 +1,5 @@
 #include "AI.hpp"
 
-
 vector<int> AI::analyseField(vector<vector<fState>> field) {
   vector<int> step(2, 0);
 
@@ -14,15 +13,45 @@ vector<int> AI::analyseField(vector<vector<fState>> field) {
       if (canIStepHere(field, step))
         break;
     } while (true);
-    return step;
-  }
-    
-  if (countUnused(field) <= 1) {
-    step = getFreeCell(field);
+    lastStep = step;
     return step;
   }
 
+  if (countUnused(field) <= 1) {
+    step = getFreeCell(field);
+    return step;
+  }  
+
   fieldMask = field;
+
+  // Check last step
+  for (int i = 0; i < 3; i++) {
+    if (isMyStep(fieldMask, i, lastStep[1])) continue;
+    if (canIStepHere(fieldMask, i, lastStep[1])) {
+      fieldMask[i][lastStep[1]] = myLetter;
+      if (!chkWinState(fieldMask)) continue;
+      else {
+        step[0] = i;
+        step[1] = lastStep[1];
+        lastStep = step;
+        return step;
+      }
+    }
+  }
+
+  for (int i = 0; i < 3; i++) {
+    if (isMyStep(fieldMask, lastStep[0], i)) continue;
+    if (canIStepHere(fieldMask, lastStep[0], i)) {
+      fieldMask[lastStep[0]][i] = myLetter;
+      if (!chkWinState(fieldMask)) continue;
+      else {
+        step[0] = lastStep[0];
+        step[1] = i;
+        lastStep = step;
+        return step;
+      }
+    }
+  }
 
   for (int i = 0; i < 3; i++) {
     fieldMask = field;
@@ -34,12 +63,13 @@ vector<int> AI::analyseField(vector<vector<fState>> field) {
         else {
           step[0] = i;
           step[1] = j;
+          lastStep = step;
           return step;
         }
       }
     }
   }
-  
+
   return step;
 }
 
@@ -104,6 +134,8 @@ vector<int> AI::getFreeCell(vector<vector<fState>> field) {
 }
 
 AI::AI() { }
+
+AI::~AI() { }
 
 vector<int> AI::makeStep(vector<vector<fState>> field) {
   return analyseField(field);

@@ -18,4 +18,7 @@ int main() {
     if (game->makeStep(x, y, who ? fState::X : fState::O))
       who = !who;
   }
+
+  delete ai;
+  delete game;
 }

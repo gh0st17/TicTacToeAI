@@ -25,6 +25,7 @@ class Game {
   public:
    
    Game(string * playerNames, bool * who);
+   ~Game();
    bool makeStep(int x, int y, fState value);
    bool getIsOver();
    bool getIsNA();

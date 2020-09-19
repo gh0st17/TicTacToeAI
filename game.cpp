@@ -15,6 +15,7 @@ Game::Game(string * playerNames, bool * who) {
   printField();
  }
 
+Game::~Game() {}
 
 bool Game::makeStep(int x, int y, fState value) {
   if (stepValid(x, y)) {
