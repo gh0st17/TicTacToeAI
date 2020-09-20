@@ -20,7 +20,35 @@ vector<int> AI::analyseField(vector<vector<fState>> field) {
   if (countUnused(field) <= 1) {
     step = getFreeCell(field);
     return step;
-  }  
+  }
+
+  if (field[0][0] != notMyLetter &&
+      field[1][1] != notMyLetter &&
+      field[2][2] != notMyLetter) {
+        
+      for (int i = 0; i < 3; i++) {
+        if (field[i][i] == fState::Unused &&
+            canIStepHere(field, i, i)) {
+          step[0] = step[1] = i;
+          lastStep = step;
+          return step;
+        }
+      }
+  }
+
+  if (field[0][2] != notMyLetter &&
+      field[1][1] != notMyLetter &&
+      field[2][0] != notMyLetter) {
+        
+      for (int i = 0; i < 3; i++) {
+        if (field[i][2 - i] == fState::Unused &&
+            canIStepHere(field, i, i)) {
+          step[0] = step[1] = i;
+          lastStep = step;
+          return step;
+        }
+      }
+  }
 
   fieldMask = field;
 
@@ -133,7 +161,10 @@ vector<int> AI::getFreeCell(vector<vector<fState>> field) {
   return step;
 }
 
-AI::AI() { }
+AI::AI(fState myLetter) {
+  this->myLetter = myLetter;
+  this->notMyLetter = (myLetter == fState::X ? fState::O : fState::X);
+}
 
 AI::~AI() { }
 

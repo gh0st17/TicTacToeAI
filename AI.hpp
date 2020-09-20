@@ -10,7 +10,8 @@ using namespace std;
 class AI {
 
   private:
-    const fState myLetter = fState::O;
+    fState myLetter;
+    fState notMyLetter;
     vector<int> lastStep;
     vector<vector<fState>> fieldMask;
 
@@ -24,7 +25,7 @@ class AI {
 
   public:
 
-    AI();
+    AI(fState myLetter = fState::O);
     ~AI();
     vector<int> makeStep(vector<vector<fState>> field);
 
