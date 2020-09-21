@@ -1,17 +1,12 @@
-#include <vector>
-#include <iostream>
+#include "KnowledgeSerializer.hpp"
 
 using namespace std;
-
-enum fState {
-  X, O, Unused
-};
 
 class Game {
 
   private:
    
-   vector<vector<fState>> field;
+   Field field;
    unsigned stepCounter = 0;
    string * playerNames;
    bool isOver = false;
@@ -30,5 +25,6 @@ class Game {
    bool getIsOver();
    bool getIsNA();
    vector<vector<fState>> getField();
+   static void printField(Field field);
    
 };

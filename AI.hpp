@@ -1,19 +1,6 @@
-#include <vector>
-#include <map>
-#include <sstream>
-#include <fstream>
-#include <iostream>
-#include <random>
-#include <time.h>
-#include <unistd.h> 
 #include "game.hpp"
 
 using namespace std;
-
-typedef vector<vector<fState>> Field;
-typedef vector<Field> FieldHistory;
-typedef vector<FieldHistory> ArrayOfHistory;
-typedef map<Field, ArrayOfHistory> Knowledge;
 
 class AI {
 
@@ -32,9 +19,6 @@ class AI {
     bool chkWinState(Field field);
     unsigned short countUnused(Field field);
     vector<int> getFreeCell(Field field);
-    void writeKnowledge();
-    vector<string> split(string str, char delimiter);
-    Field getFieldFromString(string str);
 
   public:
 

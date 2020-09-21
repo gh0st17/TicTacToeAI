@@ -2,7 +2,7 @@
 
 //#define AI_VS_AI
 
-int main() {
+int main() {/*
   bool who = false;
   #ifdef AI_VS_AI
     string playerNames[2] = { "AI(O)", "AI(X)" };
@@ -38,6 +38,46 @@ int main() {
   #ifdef AI_VS_AI
     delete ai2;
   #endif
-  delete game;
+  delete game;*/
+
+  FieldHistory fh;
+  ArrayOfHistory aH;
+  Knowledge k;
+  
+  fh.push_back(KnowledgeSerializer::getFieldFromString("1,2,2.2,0,1.2,1,0"));
+  fh.push_back(KnowledgeSerializer::getFieldFromString("1,1,2.2,0,1.2,1,0"));
+  fh.push_back(KnowledgeSerializer::getFieldFromString("1,1,1.2,0,1.2,1,0"));
+  aH.push_back(fh);
+
+  k[fh[0]] = aH;
+
+  KnowledgeSerializer::writeKnowledge(k);
+  //KnowledgeSerializer::printKnowledge(k);
+  
+  k = KnowledgeSerializer::readKnowledge();
+  //KnowledgeSerializer::printKnowledge(k);
+  fh.clear();
+  aH.clear();
+  
+  fh.push_back(KnowledgeSerializer::getFieldFromString("1,2,2.2,0,1.0,0,0"));
+  fh.push_back(KnowledgeSerializer::getFieldFromString("1,1,2.2,0,1.0,2,0"));
+  fh.push_back(KnowledgeSerializer::getFieldFromString("1,1,1.2,0,1.0,2,2"));
+  aH.push_back(fh);
+
+  k[fh[0]] = aH;
+
+  KnowledgeSerializer::writeKnowledge(k);
+  //KnowledgeSerializer::printKnowledge(k);
+  
+  k = KnowledgeSerializer::readKnowledge();
+
+  fh.push_back(KnowledgeSerializer::getFieldFromString("1,1,1.2,0,2.2,2,2"));
+  aH.push_back(fh);
+  k[fh[0]] = aH;
+  KnowledgeSerializer::printKnowledge(k);
+  KnowledgeSerializer::writeKnowledge(k);
+  k = KnowledgeSerializer::readKnowledge();
+  KnowledgeSerializer::printKnowledge(k);
+
   return 0;
 }
