@@ -1,6 +1,11 @@
 #include "AI.hpp"
 
-vector<int> AI::analyseField(vector<vector<fState>> field) {
+template <typename Iter>
+Iter nexti(Iter iter) {
+    return ++iter;
+}
+
+vector<int> AI::analyseField(Field field) {
   vector<int> step(2, 0);
 
   // First AI step
@@ -101,19 +106,19 @@ vector<int> AI::analyseField(vector<vector<fState>> field) {
   return step;
 }
 
-bool AI::isMyStep(vector<vector<fState>> field, int x, int y) {
+bool AI::isMyStep(Field field, int x, int y) {
   return field[x][y] == myLetter;
 }
 
-bool AI::canIStepHere(vector<vector<fState>> field, vector<int> step) {
+bool AI::canIStepHere(Field field, vector<int> step) {
   return field[step[0]][step[1]] == fState::Unused;
 }
 
-bool AI::canIStepHere(vector<vector<fState>> field, int x, int y) {
+bool AI::canIStepHere(Field field, int x, int y) {
   return field[x][y] == fState::Unused;
 }
 
-bool AI::chkWinState(vector<vector<fState>> field) {
+bool AI::chkWinState(Field field) {
   for (int i = 0; i < 3; i++)
     if (field[0][i] == field[1][i] &&
         field[1][i] == field[2][i] &&
@@ -139,7 +144,7 @@ bool AI::chkWinState(vector<vector<fState>> field) {
   return false;
 }
 
-unsigned short AI::countUnused(vector<vector<fState>> field) {
+unsigned short AI::countUnused(Field field) {
   unsigned short count = 0;
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++)
@@ -148,7 +153,7 @@ unsigned short AI::countUnused(vector<vector<fState>> field) {
   return count;
 }
 
-vector<int> AI::getFreeCell(vector<vector<fState>> field) {
+vector<int> AI::getFreeCell(Field field) {
   vector<int> step(2, 0);
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++)
@@ -161,13 +166,108 @@ vector<int> AI::getFreeCell(vector<vector<fState>> field) {
   return step;
 }
 
+void AI::writeKnowledge() {
+  if (myLetter == fState::O) {
+    size_t size = sizeof(knowlege);
+    printf("Size knows: %zu\n", size);
+    ofstream ofs("knows.bin");
+    for (Knowledge::iterator i = knowlege.begin(); i != knowlege.end(); ++i) {
+      //Write key
+      for (int x = 0; x < 3; x++) {
+        for (int y = 0; y < 3; y++) {
+          ofs << i->first[x][y];
+          if (y != 2) ofs << ',';
+        }
+        if (x != 2) ofs << '.';
+      }
+      ofs << "-";
+
+      //Write value
+      for (ArrayOfHistory::iterator it = i->second.begin(); it != i->second.end(); ++it) {
+        for (int game = 0; game < it->size(); game++) {
+          for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+              ofs << (*it)[game][x][y];
+              if (y != 2) ofs << ',';
+            }
+            if (x != 2) ofs << '.';
+          }
+          if (game != i->first.size() - 1) ofs << '|';
+        }
+        if ((it!= i->second.end()) && (nexti(it) == i->second.end())) ofs << '?';
+      }
+      if ((i!= knowlege.end()) && (nexti(i) == knowlege.end())) ofs << '\n';
+    }
+    ofs.close();
+  }
+}
+
+vector<string> AI::split(string str, char delimiter) {
+	vector<string> internal;
+	stringstream ss(str); // Turn the string into a stream.
+	string tok;
+	while (getline(ss, tok, delimiter)) {
+		internal.push_back(tok);
+	}
+	return internal;
+}
+
+Field AI::getFieldFromString(string str) {
+  vector<string> rows = split(str, '.');
+  Field field(3, vector<fState>(3, fState::Unused));
+  int x = 0, y = 0;
+  for (vector<string>::iterator it = rows.begin(); it != rows.end(); ++it) {
+    vector<string> row = split((*it), ',');
+    y = 0;
+    for (vector<string>::iterator it2 = row.begin(); it2 != row.end(); ++it2) {
+      stringstream value;
+      value << (*it2);
+      int tmp;
+      value >> tmp;
+      field[x][y] = (fState)tmp;
+      y++;
+    }
+    x++;
+  }
+  return field;
+}
+
 AI::AI(fState myLetter) {
   this->myLetter = myLetter;
-  this->notMyLetter = (myLetter == fState::X ? fState::O : fState::X);
+  this->notMyLetter = (myLetter == fState::X ? fState::O : fState::X);  
+  if (myLetter == fState::O) {
+    ifstream ifs("knows.bin");
+    string line;
+    while(ifs >> line) {
+      vector<string> keyAndValue = split(line, '-');
+      Field key = getFieldFromString(keyAndValue[0]);
+      vector<string> arrayOfHistory = split(keyAndValue[1], '?');
+      ArrayOfHistory value;
+      for (vector<string>::iterator it = arrayOfHistory.begin(); it != arrayOfHistory.end(); ++it) {
+        vector<string> fieldHistory = split((*it), '|');
+        FieldHistory fH;
+        for (vector<string>::iterator it2 = fieldHistory.begin(); it2 != fieldHistory.end(); ++it2) {
+          fH.push_back(getFieldFromString((*it2)));
+        }
+        value.push_back(fH);
+      }
+      knowlege[key] = value;
+    }
+  }
 }
 
 AI::~AI() { }
 
-vector<int> AI::makeStep(vector<vector<fState>> field) {
-  return analyseField(field);
+vector<int> AI::makeStep(Field field) {
+  vector<int> step = analyseField(field);
+  field[step[0]][step[1]] = myLetter;
+  currentGame.push_back(field);
+
+  if (!countUnused(field) || chkWinState(field)) {
+    if (knowlege.find(field) == knowlege.end())
+      knowlege[field].push_back(currentGame);
+    writeKnowledge();
+  }
+
+  return step;
 }

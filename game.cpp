@@ -64,7 +64,7 @@ bool Game::stepValid(int x, int y) {
 }
 
 void Game::printField() {
-  system("clear");
+  //system("clear");
   cout << "  0 1 2\n";
   for (int i = 0; i < 3; i++) {
     cout << i;
@@ -77,11 +77,11 @@ void Game::printField() {
   }
 
   if (!isOver && !isNA)
-    cout << "Now player is " << (stepCounter == 0 ? playerNames[*who] : playerNames[!(*who)]) << '\n';
+    cout << "Now player is " << (stepCounter == 0 ? playerNames[*who] : playerNames[!(*who)]) << "\n\n";
   else if (isOver && chkWinState())
-    cout << "Player " << playerNames[*who] << " win!\n";
+    cout << "Player " << playerNames[*who] << " win!\n\n";
   else if (isOver && isNA) 
-    cout << "N/A win -_-\n";
+    cout << "N/A win -_-\n\n";
 }
 
 bool Game::getIsOver() { return this->isOver; }
