@@ -22,6 +22,7 @@ int main() {
         x = aiStep[0];
         y = aiStep[1];
       #else
+        cout << "> ";
         cin >> x >> y;
       #endif
     } else {
@@ -35,6 +36,7 @@ int main() {
   }
 
   ai->saveKnowledge(game->getField());
+  ai2->saveKnowledge(game->getField());
 
   delete ai;
   #ifdef AI_VS_AI

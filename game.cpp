@@ -85,17 +85,6 @@ void Game::printField() {
     cout << "N/A win -_-\n\n";
 }
 
-void Game::printField(Field field) {
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
-      if (field[i][j] == fState::Unused) cout << " -";
-      else if (field[i][j] == fState::X) cout << " X";
-      else if (field[i][j] == fState::O) cout << " O";
-    }
-    cout << '\n';
-  }
-}
-
 bool Game::getIsOver() { return this->isOver; }
 
 Field Game::getField() { return field; }

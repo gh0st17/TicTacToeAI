@@ -1,10 +1,6 @@
 #include "KnowledgeSerializer.hpp"
 #include "game.hpp"
-
-template <typename Iter>
-Iter nexti(Iter iter) {
-    return ++iter;
-}
+#include "AI.hpp"
 
 Knowledge KnowledgeSerializer::readKnowledge() {
   Knowledge knowledge;
@@ -12,8 +8,10 @@ Knowledge KnowledgeSerializer::readKnowledge() {
   if (ifs.fail()) return knowledge;
   string line;
   while(ifs >> line) {
+    cout << line << endl;
     vector<string> keyAndValue = split(line, '-');
-    Field key = getFieldFromString(keyAndValue[0]);
+    cout << keyAndValue.size() << endl;
+    FieldAI key = getFieldFromString(keyAndValue[0]);
     vector<string> arrayOfHistory = split(keyAndValue[1], '?');
     ArrayOfHistory value;
     for (vector<string>::iterator it = arrayOfHistory.begin(); it != arrayOfHistory.end(); ++it) {
@@ -72,9 +70,9 @@ vector<string> KnowledgeSerializer::split(string str, char delimiter) {
 	return internal;
 }
 
-Field KnowledgeSerializer::getFieldFromString(string str) {
+FieldAI KnowledgeSerializer::getFieldFromString(string str) {
   vector<string> rows = split(str, '.');
-  Field field(3, vector<fState>(3, fState::Unused));
+  FieldAI field(3, vector<fStateAI>(3, fStateAI::NA));
   int x = 0, y = 0;
   for (vector<string>::iterator it = rows.begin(); it != rows.end(); ++it) {
     vector<string> row = split((*it), ',');
@@ -84,7 +82,7 @@ Field KnowledgeSerializer::getFieldFromString(string str) {
       value << (*it2);
       int tmp;
       value >> tmp;
-      field[x][y] = (fState)tmp;
+      field[x][y] = (fStateAI)tmp;
       y++;
     }
     x++;
@@ -95,11 +93,11 @@ Field KnowledgeSerializer::getFieldFromString(string str) {
 void KnowledgeSerializer::printKnowledge(Knowledge knowledge) {
   for (Knowledge::iterator it = knowledge.begin(); it != knowledge.end(); ++it) {
     cout << "Key:\n";
-    Game::printField((*it).first);
+    AI::printField((*it).first);
     cout << "Values:\n";
     for (ArrayOfHistory::iterator it2 = (*it).second.begin(); it2 != (*it).second.end(); ++it2) {
       for (int i = 0; i < (*it2).size(); i++) {
-        Game::printField((*it2)[i]);
+        AI::printField((*it2)[i]);
         cout << "\n";
       }
       cout << "-------------------\n";

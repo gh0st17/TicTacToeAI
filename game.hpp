@@ -1,6 +1,13 @@
+#pragma once
 #include "KnowledgeSerializer.hpp"
 
 using namespace std;
+
+enum fState {
+  X, O, Unused
+};
+
+typedef vector<vector<fState>> Field;
 
 class Game {
 

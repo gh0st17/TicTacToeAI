@@ -6,18 +6,18 @@
 #include <iostream>
 #include <random>
 #include <time.h>
-#include <unistd.h> 
+#include <unistd.h>
 
 using namespace std;
 
-enum fState {
-  X, O, Unused
+enum fStateAI {
+  myStep, opponentStep, NA
 };
 
-typedef vector<vector<fState>> Field;
-typedef vector<Field> FieldHistory;
+typedef vector<vector<fStateAI>> FieldAI;
+typedef vector<FieldAI> FieldHistory;
 typedef vector<FieldHistory> ArrayOfHistory;
-typedef map<Field, ArrayOfHistory> Knowledge;
+typedef map<FieldAI, ArrayOfHistory> Knowledge;
 
 class KnowledgeSerializer {
   private:
@@ -26,7 +26,7 @@ class KnowledgeSerializer {
 
   public:
     
-    static Field getFieldFromString(string str);
+    static FieldAI getFieldFromString(string str);
     static Knowledge readKnowledge();
     static void writeKnowledge(Knowledge knowledge);
     static void printKnowledge(Knowledge knowledge);
