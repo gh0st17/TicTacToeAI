@@ -1,8 +1,8 @@
 #include "AI.hpp"
 
-//#define AI_VS_AI
+#define AI_VS_AI
 
-int main() {/*
+int main() {
   bool who = false;
   #ifdef AI_VS_AI
     string playerNames[2] = { "AI(O)", "AI(X)" };
@@ -34,12 +34,14 @@ int main() {/*
       who = !who;
   }
 
+  ai->saveKnowledge(game->getField());
+
   delete ai;
   #ifdef AI_VS_AI
     delete ai2;
   #endif
-  delete game;*/
-
+  delete game;
+/*
   FieldHistory fh;
   ArrayOfHistory aH;
   Knowledge k;
@@ -77,7 +79,7 @@ int main() {/*
   KnowledgeSerializer::printKnowledge(k);
   KnowledgeSerializer::writeKnowledge(k);
   k = KnowledgeSerializer::readKnowledge();
-  KnowledgeSerializer::printKnowledge(k);
+  KnowledgeSerializer::printKnowledge(k);*/
 
   return 0;
 }

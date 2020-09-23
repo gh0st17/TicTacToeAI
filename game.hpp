@@ -24,7 +24,7 @@ class Game {
    bool makeStep(int x, int y, fState value);
    bool getIsOver();
    bool getIsNA();
-   vector<vector<fState>> getField();
+   Field getField();
    static void printField(Field field);
    
 };

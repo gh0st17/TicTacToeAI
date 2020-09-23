@@ -1,25 +1,20 @@
 #include "AI.hpp"
 
+#define debug
 
 vector<int> AI::analyseField(Field field) {
   vector<int> step(2, 0);
 
   // First AI step
   if (countUnused(field) == 9) {
-    srand (time(NULL));
-    do {
-      step[0] = rand() % 3;
-      usleep(3000000);
-      step[1] = rand() % 3;
-      if (canIStepHere(field, step))
-        break;
-    } while (true);
-    lastStep = step;
-    return step;
+    step = getRandomStep(field);
   }
 
   if (countUnused(field) <= 1) {
     step = getFreeCell(field);
+    #ifdef debug
+      cout << "Free Cell\n";
+    #endif
     return step;
   }
 
@@ -30,9 +25,13 @@ vector<int> AI::analyseField(Field field) {
       for (int i = 0; i < 3; i++) {
         if (field[i][i] == fState::Unused &&
             canIStepHere(field, i, i)) {
-          step[0] = step[1] = i;
-          lastStep = step;
-          return step;
+
+              step[0] = step[1] = i;
+              lastStep = step;
+              #ifdef debug
+                cout << "Diagonal \\\n";
+              #endif
+              return step;
         }
       }
   }
@@ -44,9 +43,13 @@ vector<int> AI::analyseField(Field field) {
       for (int i = 0; i < 3; i++) {
         if (field[i][2 - i] == fState::Unused &&
             canIStepHere(field, i, i)) {
-          step[0] = step[1] = i;
-          lastStep = step;
-          return step;
+
+              step[0] = step[1] = i;
+              lastStep = step;
+              #ifdef debug
+                cout << "Diagonal /\n";
+              #endif
+              return step;
         }
       }
   }
@@ -63,6 +66,9 @@ vector<int> AI::analyseField(Field field) {
         step[0] = i;
         step[1] = lastStep[1];
         lastStep = step;
+        #ifdef debug
+          cout << "Vertical\n";
+        #endif
         return step;
       }
     }
@@ -77,6 +83,9 @@ vector<int> AI::analyseField(Field field) {
         step[0] = lastStep[0];
         step[1] = i;
         lastStep = step;
+        #ifdef debug
+          cout << "Horizontal\n";
+        #endif
         return step;
       }
     }
@@ -93,13 +102,16 @@ vector<int> AI::analyseField(Field field) {
           step[0] = i;
           step[1] = j;
           lastStep = step;
+          #ifdef debug
+            cout << "Finding winning\n";
+          #endif
           return step;
         }
       }
     }
   }
 
-  return step;
+  return getRandomStep(field);
 }
 
 bool AI::isMyStep(Field field, int x, int y) {
@@ -162,11 +174,29 @@ vector<int> AI::getFreeCell(Field field) {
   return step;
 }
 
+vector<int> AI::getRandomStep(Field field) {
+  vector<int> step(2, 0);
+  srand(time(NULL));
+  do {
+    step[0] = rand() % 3;
+    usleep(3000000);
+    step[1] = rand() % 3;
+    if (canIStepHere(field, step))
+      break;
+  } while (true);
+  lastStep = step;
+
+  #ifdef debug
+    cout << "Random Step\n";
+  #endif
+  return step;
+}
+
 AI::AI(fState myLetter) {
   this->myLetter = myLetter;
   this->notMyLetter = (myLetter == fState::X ? fState::O : fState::X);  
   if (myLetter == fState::O) {
-    //open knows
+    knowlege = KnowledgeSerializer::readKnowledge();
   }
 }
 
@@ -177,11 +207,10 @@ vector<int> AI::makeStep(Field field) {
   field[step[0]][step[1]] = myLetter;
   currentGame.push_back(field);
 
-  if (!countUnused(field) || chkWinState(field)) {
-    if (knowlege.find(field) == knowlege.end())
-      knowlege[field].push_back(currentGame);
-    //writeKnowledge();
-  }
-
   return step;
+}
+
+void AI::saveKnowledge(Field field) {
+  knowlege[field].push_back(currentGame);
+  KnowledgeSerializer::writeKnowledge(knowlege);
 }

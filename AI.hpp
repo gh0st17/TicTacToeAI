@@ -19,11 +19,13 @@ class AI {
     bool chkWinState(Field field);
     unsigned short countUnused(Field field);
     vector<int> getFreeCell(Field field);
+    vector<int> getRandomStep(Field field);
 
   public:
 
     AI(fState myLetter = fState::O);
     ~AI();
     vector<int> makeStep(Field field);
+    void saveKnowledge(Field field);
 
 };

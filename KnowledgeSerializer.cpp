@@ -9,6 +9,7 @@ Iter nexti(Iter iter) {
 Knowledge KnowledgeSerializer::readKnowledge() {
   Knowledge knowledge;
   ifstream ifs("knows.bin");
+  if (ifs.fail()) return knowledge;
   string line;
   while(ifs >> line) {
     vector<string> keyAndValue = split(line, '-');
@@ -29,6 +30,7 @@ Knowledge KnowledgeSerializer::readKnowledge() {
 }
 
 void KnowledgeSerializer::writeKnowledge(Knowledge knowledge) {
+  if (!knowledge.size()) return;
   ofstream ofs("knows.bin");
   for (Knowledge::iterator i = knowledge.begin(); i != knowledge.end(); ++i) {
     //Write key
@@ -51,7 +53,7 @@ void KnowledgeSerializer::writeKnowledge(Knowledge knowledge) {
           }
           if (x != 2) ofs << '.';
         }
-        if (game != i->first.size() - 1) ofs << '|';
+        if (game != it->size() - 1) ofs << '|';
       }
       ofs << '?';
     }

@@ -18,6 +18,7 @@ Game::Game(string * playerNames, bool * who) {
 Game::~Game() {}
 
 bool Game::makeStep(int x, int y, fState value) {
+  //cout << x << " " << y << endl;
   if (stepValid(x, y)) {
     field[x][y] = *who ? fState::X : fState::O;
     stepCounter++;
@@ -97,4 +98,4 @@ void Game::printField(Field field) {
 
 bool Game::getIsOver() { return this->isOver; }
 
-vector<vector<fState>> Game::getField() { return field; }
+Field Game::getField() { return field; }
